@@ -581,6 +581,17 @@ fn create_texture_rect<'a>(canvas: &mut Canvas<Window>,
     }
 }
 
+fn create_texture_from_text<'a>(texture_creator: &'a TextureCreator<WindowContext>,
+                                font: &sdl::ttf::Font,
+                                text: &str,
+                                red: u8, green: u8, blue: u8) -> Option<Texture<'a>>{
+    if let Ok(surface) = font.render(text).blended(Color::RGB(red,green,blue)) {
+        texture_creator.create_texture_from_surface(&surface).ok()
+    } else {
+        None
+    }
+}
+
 fn main() {
     let sdl_context = sdl2::init().expect("SDL initialization failed");
     let video_subsystem = sdl_context.video()
@@ -592,6 +603,10 @@ fn main() {
         .position_centered() // to put it in the middle of the screen
         .build()
         .expect("Failed to create a window");
+
+    let ttf_context = sdl2::init().expect("SDL ttf initialization failed");
+    let font = ttf_context.load_font("assets/lucida.ttf", 128).expect("Unable to load ttf font");
+    font.set_style(sdl2::ttf::STYLE_BOLD);
 
     let mut canvas = window.into_canvas()
         .target_texture()
@@ -709,3 +724,4 @@ fn main() {
         sleep(Duration::new(0, 1_000_000_00u32 / 60));
     }
 }
+
